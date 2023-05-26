@@ -1,19 +1,31 @@
 'use client'
-
+import { useUser } from '@/context/Context'
+import { onAuth, signInWithEmailAndPassword } from '@/supabase/utils'
+import { useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import style from './page.module.css'
 import Button from '../components/Button'
+import Input from '@/components/Input'
 
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const { user, setUserProfile, setUserSuccess, success, setUserData, postsIMG, setUserPostsIMG } = useUser()
+
   const router = useRouter()
 
-  function next(e) {
+  const signInHandler = (e) => {
     e.preventDefault()
-    // router.push(rol)
-}
+    let email = e.target[0].value
+    let password = e.target[1].value
+    signInWithEmailAndPassword(email, password)
+  }
+
+  useEffect(() => {
+    onAuth(setUserProfile, setUserData, postsIMG, setUserPostsIMG)
+    if (user) router.replace('/Cliente')
+  }, [user]);
 
 
   return (
@@ -24,17 +36,17 @@ export default function Home() {
         <Image src="/logo-main.svg" width="200" height="200" alt="User" />
         <br />
         <br />
-        <form className={style.form}>
+        <form className={style.form} onSubmit={signInHandler}>
           <h4 className={style.subtitle}>Iniciar Sesión</h4>
           <br />
           <label htmlFor="">Correo</label>
-          <input className={style.input} type="text" placeholder="example@gmail.com" />
+          <Input type="text" placeholder="example@gmail.com" />
           <br />
           <label htmlFor="">Contraseña</label>
-          <input className={style.input} type="password" placeholder="contraseña" />
+          <Input  type="password" placeholder="contraseña" />
           <br />
           <div className={style.buttonsContainer}>
-            <Button theme='Primary' click={next} >Iniciar Sesion</Button>
+            <Button theme='Primary' >Iniciar Sesion</Button>
           </div>
           <br />
           <div className={style.linkContainer} ><Link href="/SignUp" className={style.link}>Olvidaste tu Contraseña</Link></div>
